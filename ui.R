@@ -12,17 +12,17 @@ shinyUI(fluidPage(
                         "))
     ),
     # Application title
-    titlePanel("Word Prediction 101"),
+    titlePanel("Word Prediction and Completion 101"),
     sidebarLayout(position='right',
-        sidebarPanel(
+        sidebarPanel(width=5, 
             strong("INSTRUCTIONS"),
-            p("Type in your sentence. You can use the buttons to input your next word."),
+            p("Start typing. You can use the buttons to input your next word or do auto-completion. 
+              If the last character is a letter, the app will do current word completion else it will do next word prediction."),
             checkboxInput('checkbox', label='Show Conditional Probability', width='100%'),
             actionButton('erase', label='Erase Text', width='100%')
         ),
         # Show a plot of the generated distribution
-        mainPanel(
-            h4('Data will take a few seconds to load. '),
+        mainPanel(width=7,
             textInput(inputId="text", label="Type Here", value="", width='100%'),
             hr(),
             fluidRow(
@@ -39,12 +39,6 @@ shinyUI(fluidPage(
                     column(4,verbatimTextOutput(outputId='prob3', placeholder=T))
                 )
             )
-            # fluidRow(
-            #     column(4, verbatimTextOutput(outputId='prob4', placeholder=T)),
-            #     column(4, verbatimTextOutput(outputId='prob5', placeholder=T)),
-            #     column(4, verbatimTextOutput(outputId='prob6', placeholder=T))
-            # ),
-            # verbatimTextOutput(outputId='prob7', placeholder=T)
         )
     )
 ))
