@@ -1,3 +1,3 @@
 # SwiftKey Project
 
-The slidedeck for this project is available at http://rpubs.com/caoa/wordprediction
+The slide deck for this project is available at http://rpubs.com/caoa/wordprediction
