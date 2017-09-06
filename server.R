@@ -5,7 +5,7 @@ library(shiny)
 library(data.table)
 library(stringr)
 
-load('final10.RData')
+load('final2.RData')
 setkey(DF,'Y','ngram')
 choices = 3
 ngram = 4

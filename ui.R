@@ -22,7 +22,8 @@ shinyUI(fluidPage(
     sidebarLayout(position='right',
         sidebarPanel(
             strong("INSTRUCTIONS"),
-            p("Start typing. Use the buttons to enter the next word or perform word completion."),
+            p("Start typing. Use the buttons to enter the next word or perform word completion. 
+              The app decides based on whether the last character is a letter or not."),
             checkboxInput('checkbox', label='Show Conditional Probability', width='100%'),
             actionButton('erase', label='Erase Text', width='100%')
         ),
