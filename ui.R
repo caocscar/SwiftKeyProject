@@ -2,6 +2,7 @@
 # run the application by clicking 'Run App' above.
 
 library(shiny)
+
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
     tags$head(
@@ -11,7 +12,7 @@ shinyUI(fluidPage(
                         #prob3 {text-align: center;}
                         ")),
         tags$script('Shiny.addCustomMessageHandler("refocus",
-                     function(NULL) {
+                     function(message) {
                          document.getElementById("text").focus();
                      });'
         )

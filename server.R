@@ -5,7 +5,7 @@ library(shiny)
 library(data.table)
 library(stringr)
 
-load('final2.RData')
+load('final10.RData')
 setkey(DF,'Y','ngram')
 choices = 3
 ngram = 4
@@ -17,10 +17,7 @@ shinyServer(function(input, output, session) {
         S = input$text[1]
         # string cleaning (lowercase, punctuation, extra&leading&trailing spaces)
         s = sapply(S, tolower)
-        if (str_detect(s, '[a-z]$')) {
-            words = str_split(S, " ")[[1]]
-            s = paste(words[1:length(words)-1], collapse = " ")
-        }
+        s = sub('[a-z]+$', "", s)
         s = str_replace_all(s,"[^a-z0-9' ]","")
         s = str_replace_all(s," {2,}"," ")
         s = trimws(s)
@@ -40,7 +37,7 @@ shinyServer(function(input, output, session) {
                 beta = 1 - df4[,sum(ct*discount)/sum(ct)]
                 if (!is.na(beta)) {
                     beta_flag = F
-                    df4N = df4[,pbo:=discount*ct/sum(ct)]
+                    df4N = df4[,pbo:=discount*ct/sum(ct)][pbo>0,.(Z,pbo)]
                 } else {
                     df4N = data.table()
                 }
@@ -52,7 +49,7 @@ shinyServer(function(input, output, session) {
                 beta = 1 - df3[,sum(ct*discount)/sum(ct)]
                 if (!is.na(beta)) {
                     beta_flag = F
-                    df3N = df3[,pbo:=discount*ct/sum(ct)]
+                    df3N = df3[,pbo:=discount*ct/sum(ct)][pbo>0,.(Z,pbo)]
                 } else {
                     df3N = data.table()
                 }
@@ -62,7 +59,7 @@ shinyServer(function(input, output, session) {
                 df3[, ct2:=tf*ct]
                 df3[,pbo_lower:=discount*ct2/sum(ct2)]
                 alpha3 = beta/df3[,sum(pbo_lower)]
-                df3N = df3[,pbo:=alpha3*pbo_lower]
+                df3N = df3[,pbo:=alpha3*pbo_lower][pbo>0,.(Z,pbo)]
             }
             # 2gram calculation
             phrase1 = sub('^.+? ','',phrase2)
@@ -71,7 +68,7 @@ shinyServer(function(input, output, session) {
                 beta = 1 - df2[,sum(ct*discount)/sum(ct)]
                 if (!is.na(beta)) {
                     beta_flag = F
-                    df2N = df2[,pbo:=discount*ct/sum(ct)]
+                    df2N = df2[,pbo:=discount*ct/sum(ct)][pbo>0,.(Z,pbo)]
                 } else {
                     df2N = data.table()
                 }
@@ -81,29 +78,29 @@ shinyServer(function(input, output, session) {
                 df2[, ct2:=tf*ct]
                 df2[,pbo_lower:=discount*ct2/sum(ct2)]
                 alpha2 = beta/df2[,sum(pbo_lower)]
-                df2N = df2[,pbo:=alpha2*pbo_lower]
+                df2N = df2[,pbo:=alpha2*pbo_lower][pbo>0,.(Z,pbo)]
             }
             # 1gram calculation
             df1 = DF[ngram==1]
             if (beta_flag) {
-                df1N = df1[,pbo:=discount*ct/sum(ct)]
+                df1N = df1[,pbo:=discount*ct/sum(ct)][pbo>0,.(Z,pbo)]
             } else {
                 df1$tf = 1
                 df1[Z %in% c(df4[,Z],df3[,Z],df2[,Z]), tf:=0]
                 df1[, ct2:=tf*ct]
                 df1[,pbo_lower:=discount*ct2/sum(ct2)]
                 alpha1 = beta/df1[,sum(pbo_lower)]
-                df1N = df1[,pbo:=alpha1*pbo_lower]
+                df1N = df1[,pbo:=alpha1*pbo_lower][pbo>0,.(Z,pbo)]
             }
             # combine top results
-            df_combined = rbind(df1N,df2N,df3N,df4N,fill=TRUE)
+            df_combined = rbind(df1N,df2N,df3N,df4N)
             if (str_detect(S, '[a-z]$')) {
-                words = str_split(S, " ")[[1]]
-                W = words[length(words)]
-                regex = paste0('^',W)
-                dfN = df_combined[grep(regex, df_combined$Z)][order(-pbo)][1:choices,.(Z,pbo)]
+                phrase = str_split(S, " ")[[1]]
+                last_word = tolower(phrase[length(phrase)])
+                regex = paste0('^',last_word)
+                dfN = df_combined[grep(regex, df_combined$Z)][order(-pbo)][1:choices]
             } else {
-                dfN = df_combined[order(-pbo)][1:choices,.(Z,pbo)]
+                dfN = df_combined[order(-pbo)][1:choices]
             }
             W = sapply(dfN[,'Z'], as.character)
             Pbo = sapply(dfN[,'pbo'], round, 3)
@@ -114,13 +111,8 @@ shinyServer(function(input, output, session) {
     })
     updateSentence <- function(x) {
         S = input$text[1]
-        if (str_detect(S, '[a-z]$')) {
-            words = str_split(S, " ")[[1]]
-            words[length(words)] = as.character(x)
-            newtext = paste(words, collapse=" ")
-        } else {
-            newtext = trimws(paste(S, as.character(x)))
-        }
+        S = sub('[A-Za-z]+$', "", S)
+        newtext = trimws(paste(S, as.character(x)))
         newtext = str_replace_all(newtext," {2,}"," ")
         updateTextInput(session, 'text', value=paste0(newtext," "))
     }
@@ -151,7 +143,7 @@ shinyServer(function(input, output, session) {
     output$word3 <- renderUI({
         actionButton('action3', label=P()[3], width='100%')
     })
-    # probabilities
+    # conditional probabilities
     output$prob1 <- renderText(P()[4])
     output$prob2 <- renderText(P()[5])
     output$prob3 <- renderText(P()[6])
