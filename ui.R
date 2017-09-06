@@ -9,20 +9,24 @@ shinyUI(fluidPage(
                         #prob1 {text-align: center;}
                         #prob2 {text-align: center;}
                         #prob3 {text-align: center;}
-                        "))
+                        ")),
+        tags$script('Shiny.addCustomMessageHandler("refocus",
+                     function(NULL) {
+                         document.getElementById("text").focus();
+                     });'
+        )
     ),
     # Application title
     titlePanel("Word Prediction and Completion 101"),
     sidebarLayout(position='right',
-        sidebarPanel(width=5, 
+        sidebarPanel(
             strong("INSTRUCTIONS"),
-            p("Start typing. You can use the buttons to input your next word or do auto-completion. 
-              If the last character is a letter, the app will do current word completion else it will do next word prediction."),
+            p("Start typing. Use the buttons to enter the next word or perform word completion."),
             checkboxInput('checkbox', label='Show Conditional Probability', width='100%'),
             actionButton('erase', label='Erase Text', width='100%')
         ),
         # Show a plot of the generated distribution
-        mainPanel(width=7,
+        mainPanel(
             textInput(inputId="text", label="Type Here", value="", width='100%'),
             hr(),
             fluidRow(
