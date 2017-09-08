@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
             Pbo = sapply(dfN[,'pbo'], round, 3)
             P = c(W,Pbo)
         } else if (sentence == "") {
-            P = c('The','I','That')
+            P = c('I','The','In')
         }
     })
     updateSentence <- function(x) {

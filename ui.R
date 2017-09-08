@@ -6,10 +6,14 @@ library(shiny)
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
     tags$head(
-        tags$style(HTML("hr {border-top: 2px solid #0084b4;}
-                        #prob1 {text-align: center;}
-                        #prob2 {text-align: center;}
-                        #prob3 {text-align: center;}
+        tags$style(HTML("hr {border-top: 2px solid #084594}
+                        #action1 {background-color: #c6dbef}
+                        #action2 {background-color: #9ecae1}
+                        #action3 {background-color: #6baed6}
+                        #erase {border-color: #084594}
+                        #prob1 {text-align: center}
+                        #prob2 {text-align: center}
+                        #prob3 {text-align: center}
                         ")),
         tags$script('Shiny.addCustomMessageHandler("refocus",
                      function(message) {
